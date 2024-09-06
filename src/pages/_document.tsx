@@ -6,6 +6,11 @@ export default function Document() {
       <Head />
       <body>
         <Main />
+        <>
+          {/* <Portal/> component Root Element */}
+          <div id="modal"></div>
+          <div id="alert"></div>
+        </>  
         <NextScript />
       </body>
     </Html>

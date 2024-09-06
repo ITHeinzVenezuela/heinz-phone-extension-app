@@ -3,12 +3,12 @@ import status, { OK } from "http-status";
 import createHttpError from "http-errors";
 import DeparmentController from "./_controllers/departments.controller";
 import { errorHandler } from "./_middlewares/errorHandler";
-import { DeparmentIdSchema } from "./_schemas/department.schema";
+import { Department, DepartmentIdSchema } from "./_schemas/department.schema";
 
 const allowedMethods = (method: string) => {
   const HTTP_METHODS = [
     "GET",
-    // "POST",
+    "POST",
     // "PUT",
     // "DELETE",
   ]
@@ -24,18 +24,14 @@ const departmentHandler = async (request: NextApiRequest, response: NextApiRespo
     if (allowedMethods(METHOD)) {
 
       if (METHOD === "GET") {
-        const departmentId = request.query.id as string
-        if (departmentId) {
+        const deparments = await deparment.getAll()
+        response.status(OK).json(deparments)
+      }
 
-          const validatedId = DeparmentIdSchema.parse(departmentId)
-          const foundExtension = await deparment.findOne(validatedId)
-          response.status(OK).json(foundExtension)
-
-        } else {
-          const deparments = await deparment.getAll()
-          response.status(OK).json(deparments)
-        }
-
+      if (METHOD === "POST") {
+        const deparmentIds: Department["id"][] = request.body
+        const deparments = await deparment.findBy(deparmentIds)
+        response.status(OK).json(deparments)
       }
 
       // if(METHOD === "POST"){

@@ -10,7 +10,8 @@ const fields = `
 `
 
 const formatData = (data: Employee[]) => {
-  const employees = data.map(({ ficha, cedula, ...rest }) => ({
+  const employees = data.map(({ ficha, cedula, name, ...rest }) => ({
+    name: name.replaceAll("#", "Ñ"),
     ficha: ficha.trim(),
     cedula: cedula.trim(),
     ...rest,
@@ -47,12 +48,32 @@ class EmployeesController {
     `
     const [data] = await sequelize.query(queryString) as [Employee[], unknown]
 
-    if (data?.length) {
+    // if (data?.length) {
       const foundEmployee = formatData(data)
       return foundEmployee;
-    } else {
-      throw createHttpError.NotFound("Employee not found!")
-    }
+    // } else {
+    //   throw createHttpError.NotFound("Employee not found!")
+    // }
+  }
+  
+  findByFichas = async (fichas: Employee["ficha"][]) => {
+
+    // Trabajadores
+    const queryString = `
+      SELECT ${fields} FROM OPENQUERY (JDE, '
+        SELECT * FROM spi.nmpp007 
+        WHERE status = ''1''
+        AND TRIM(ficha) IN (${fichas.map((ficha) => `''${ficha}''`)})
+      ')
+    `
+    const [data] = await sequelize.query(queryString) as [Employee[], unknown]
+
+    // if (data?.length) {
+      const foundEmployee = formatData(data)
+      return foundEmployee;
+    // } else {
+    //   throw createHttpError.NotFound("Employee not found!")
+    // }
   }
 }
 

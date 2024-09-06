@@ -1,11 +1,11 @@
 import { z } from "zod"
 
-const DeparmentSchema = z.object({
+const DepartmentSchema = z.object({
   id: z.string(),
   name: z.string(),
 })
 
-export const DeparmentIdSchema = DeparmentSchema.shape.id
+export const DepartmentIdSchema = DepartmentSchema.shape.id
 
-export type Deparment = z.infer<typeof DeparmentSchema>
-export type DeparmentId = z.infer<typeof DeparmentIdSchema>
+export type Department = z.infer<typeof DepartmentSchema>
+export type DepartmentId = z.infer<typeof DepartmentIdSchema>

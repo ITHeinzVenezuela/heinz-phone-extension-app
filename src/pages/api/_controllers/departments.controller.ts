@@ -1,6 +1,6 @@
 import sequelize from "@/lib/mssql";
 import createHttpError from "http-errors";
-import type { Deparment, DeparmentId } from "../_schemas/department.schema";
+import type { Department, DepartmentId } from "../_schemas/department.schema";
 
 const fields = `
   COD_infocet as id, 
@@ -13,23 +13,24 @@ class DeparmentController {
     const queryString = `
       SELECT ${fields} FROM [MEDICO_Departamento]
     `
-    const [data] = await sequelize.query(queryString) as [Deparment[], unknown]
+    const [data] = await sequelize.query(queryString) as [Department[], unknown]
     return data;
   }
 
-  findOne = async (departmentId: DeparmentId) => {
+  findBy = async (departmentIds: Department["id"][]) => {
     // Trabajadores
+    console.log(departmentIds);
     const queryString = `
       SELECT ${fields} FROM [MEDICO_Departamento]
-      WHERE COD_infocet = ${departmentId}
+      WHERE COD_infocet IN (${departmentIds})
     `
     
-    const [data] = await sequelize.query(queryString) as [unknown[], unknown]
+    const [data] = await sequelize.query(queryString) as [Department[], unknown]
 
     if (data?.length) {
       return data
     } else {
-      throw createHttpError.NotFound("Deparment not found!")
+      throw createHttpError.NotFound("Deparments not found!")
     }
   }
 

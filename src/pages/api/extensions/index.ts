@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { errorHandler } from "./_middlewares/errorHandler";
+import { errorHandler } from "../_middlewares/errorHandler";
 import { CREATED, NO_CONTENT, OK } from "http-status";
-import { Extension, ExtensionNumberSchema, ExtensionSchema } from "./_schemas/extension.schema";
+import { Extension, ExtensionNumberSchema, ExtensionSchema } from "../_schemas/extension.schema";
 import createHttpError from "http-errors";
-import ExtensionController from "./_controllers/extension.controller";
+import ExtensionController from "../_controllers/extension.controller";
 import { Extensions } from "sequelize/types/utils/validator-extras";
 
 const allowedMethods = (method: string) => {
@@ -46,17 +46,19 @@ const extensionHandler = async (request: NextApiRequest, response: NextApiRespon
       }
 
       if (METHOD === "PUT") {
-        const { extensionNumber } = request.query
+        const number = parseInt(request.query.number as string)
         const validatedFormat = ExtensionSchema.parse(request.body)
-        const validatedNumber = ExtensionNumberSchema.parse(parseInt(extensionNumber as string))
+        const validatedNumber = ExtensionNumberSchema.parse(number)
         const updatedExtension = await extension.update(validatedNumber, validatedFormat)
         response.status(OK).json(updatedExtension);
       }
 
       if (METHOD === "DELETE") {
-        const { extensionNumber } = request.query
-        const validatedNumber = ExtensionNumberSchema.parse(parseInt(extensionNumber as string))
-        await extension.delete(validatedNumber)
+        const number = parseInt(request.query.number as string)
+        const ficha = request.query.ficha as string
+        const validatedNumber = ExtensionNumberSchema.parse(number)
+        // const validatedNumber = ExtensionNumberSchema.parse(number)
+        await extension.delete(validatedNumber, ficha)
         response.status(NO_CONTENT).json(undefined);
       }
 

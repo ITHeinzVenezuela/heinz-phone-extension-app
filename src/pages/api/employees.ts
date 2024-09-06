@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import status, { OK } from "http-status";
 import createHttpError from "http-errors";
 import EmployeesController from "./_controllers/employees.controller";
-import { EmployeeIdSchema, FindEmployeeBySchema } from "./_schemas/employee.schema";
+import { EmployeeIdSchema, FindEmployeeBySchema, FindEmployeeBy } from "./_schemas/employee.schema";
 import { errorHandler } from "./_middlewares/errorHandler";
 
 const allowedMethods = (method: string) => {
@@ -28,7 +28,9 @@ const employeeHandler = async (request: NextApiRequest, response: NextApiRespons
         response.status(OK).json(employees)
       }
       
+      // Find By
       if(METHOD === "POST"){
+        
         const field = Object.keys(request.body)[0]
         const value = Object.values(request.body)[0]
         

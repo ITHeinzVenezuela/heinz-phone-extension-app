@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 import { Extension } from "../_schemas/extension.schema";
 import { getInsertAttributes } from "@/utils/api/insert";
 import { getUPDATEValues } from "@/utils/api/update";
-import { CreateUser, UpdateUser, User, UserId } from "../_schemas/user.schema";
+import { CreateUser, UpdateUser, User } from "../_schemas/user.schema";
 import { use } from "react";
 
 class UserController {
@@ -16,11 +16,11 @@ class UserController {
     return data;
   }
 
-  findOne = async (userId: UserId) => {
+  findOne = async (email: User["email"]) => {
     // Usuario
     const queryString = `
       SELECT * FROM [HPE_Users]
-      WHERE id = ${userId}
+      WHERE email = '${email}'
     `
 
     const [data] = await sequelize.query(queryString) as [User[], unknown]
@@ -60,9 +60,9 @@ class UserController {
     }
   }
 
-  update = async (userId: UserId, userInfo: UpdateUser) => {
+  update = async (email: User["email"], userInfo: UpdateUser) => {
 
-    const foundUser = await this.findOne(userId)
+    const foundUser = await this.findOne(email)
 
     if (foundUser) {
       try {
@@ -72,7 +72,7 @@ class UserController {
         const queryString = `
           UPDATE [HPE_Users]
           SET ${values}
-          WHERE id = ${userId};
+          WHERE email = '${email}';
         `
 
         const [data] = await sequelize.query(queryString) as [User[], unknown]
@@ -88,11 +88,11 @@ class UserController {
     }
   }
 
-  delete = async (userId: User["id"]) => {
+  delete = async (email: User["email"]) => {
     try {
       const queryString = `
         DELETE FROM [HPE_Users]
-        WHERE id = ${userId}
+        WHERE email = '${email}'
       `
       await sequelize.query(queryString)
 

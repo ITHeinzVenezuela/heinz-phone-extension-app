@@ -3,12 +3,14 @@
 @import "./globals.scss";
 
 //pages
+@import "../styles/pages/login";
+
 
 // widgets
-// @import "../components/widgets/styles/Button";
+@import "../components/widgets/styles/Button";
+@import "../components/widgets/styles/Spinner";
+@import "../components/widgets/styles/Input";
 // @import "../components/widgets/styles/ConfirmModal";
-// @import "../components/widgets/styles/Input";
-// @import "../components/widgets/styles/Modal";
-// @import "../components/widgets/styles/NotificationModal";
-// @import "../components/widgets/styles/Spinner";
+@import "../components/widgets/styles/Modal";
+@import "../components/widgets/styles/NotificationModal";
 // @import "../components/widgets/styles/Switch";
