@@ -36,10 +36,13 @@ const ExtensionRow = ({ extension, isAdmin, searchExtensions }: Props) => {
           </div>
         </td>
       }
-      <ModifyModal
-        {...{ extension, searchExtensions }}
-        handleModal={[showModifyModal, setModifyModal]}
-      />
+      {
+        showModifyModal &&
+        <ModifyModal
+          {...{ extension, searchExtensions }}
+          handleModal={[showModifyModal, setModifyModal]}
+        />
+      }
     </tr>
   )
 }

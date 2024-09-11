@@ -40,7 +40,6 @@ const extensionHandler = async (request: NextApiRequest, response: NextApiRespon
 
       if (METHOD === "POST") {
         const validatedFormat = ExtensionSchema.parse(request.body)
-        console.log(validatedFormat)
         const createdExtension = await extension.create(validatedFormat)
         response.status(CREATED).json(createdExtension);
       }
@@ -57,7 +56,6 @@ const extensionHandler = async (request: NextApiRequest, response: NextApiRespon
         const number = parseInt(request.query.number as string)
         const ficha = request.query.ficha as string
         const validatedNumber = ExtensionNumberSchema.parse(number)
-        // const validatedNumber = ExtensionNumberSchema.parse(number)
         await extension.delete(validatedNumber, ficha)
         response.status(NO_CONTENT).json(undefined);
       }
