@@ -1,24 +1,21 @@
 import ExtensionService from '@/services/extensions'
 import React, { ChangeEventHandler, FormEventHandler, useEffect, useState } from 'react'
 import { EmployeeExtension, Extension } from './api/_schemas/extension.schema'
-import { Employee } from './api/_schemas/employee.schema'
-import EmployeesService from '@/services/employees'
 import { Department } from './api/_schemas/department.schema'
 import DeparmentService from '@/services/departments'
 import ExtensionRow from '@/components/pages/ExtensionRow'
 import Button from '@/components/widgets/Button'
-import Input from '@/components/widgets/Input'
 import { TbPhoneX } from "react-icons/tb";
 import { TbPhoneCheck } from "react-icons/tb";
 import { FiLogIn } from "react-icons/fi";
-import { FaUserPlus } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa6";
 
 import Spinner from '@/components/widgets/Spinner'
-import ModifyModal from '@/components/pages/ModifyModal'
 import { sortDepartments } from '@/utils'
 import { useRouter } from 'next/router'
 import { getFromSStorage } from '@/utils/sessionStorage'
 import { UserCredentials } from './api/_schemas/user.schema'
+import CreateEmployeeModal from '@/components/pages/CreateEmployeeModal'
 
 const extension = new ExtensionService()
 const department = new DeparmentService()
@@ -26,6 +23,8 @@ const department = new DeparmentService()
 const Home = () => {
 
   const router = useRouter()
+
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
 
   const [user, setUser] = useState<UserCredentials>({
     name: "",
@@ -100,6 +99,37 @@ const Home = () => {
 
   return (
     <main>
+      <header className="bg-slate-200 p-4">
+        <nav className="flex gap-2 items-center justify-between">
+          <img src="https://i.imgur.com/yoGBPON.png" className="h-[50px] w-[unset]" alt="" />
+          <div className="flex gap-2 items-center">
+            {
+              !isAdmin ?
+                <Button
+                  color="info"
+                  onClick={() => router.push("/login")}
+                  className="flex gap-2 justify-center items-center !text-sm !rounded-3xl !px-3"
+                >
+                  Iniciar Sesión <FiLogIn size={20} />
+                </Button>
+                :
+                <>
+                  <span>{user.name}</span>
+                  <Button
+                    color="gray"
+                    onClick={() => {
+                      sessionStorage.clear()
+                      setIsAdmin(false)
+                    }}
+                    className="flex gap-2 justify-center items-center !text-sm !rounded-3xl !px-3"
+                  >
+                    Cerrar Sesión <FiLogIn size={20} />
+                  </Button>
+                </>
+            }
+          </div>
+        </nav>
+      </header>
       <section className="p-4">
         <div className="flex justify-between pb-4">
           <form className="flex gap-4" onSubmit={handleSubmit}>
@@ -135,30 +165,15 @@ const Home = () => {
             </Button>
 
           </form>
-          <div className="flex gap-2 items-center">
+          <div>
             {
-              !isAdmin ?
-                <Button
-                  color="info"
-                  onClick={() => router.push("/login")}
-                  className="flex gap-2 justify-center items-center !text-sm !rounded-3xl !px-3"
-                >
-                  Iniciar Sesión <FiLogIn size={20} />
-                </Button>
-                :
-                <>
-                  <span>{user.name}</span>
-                  <Button
-                    color="gray"
-                    onClick={() => {
-                      sessionStorage.clear()
-                      setIsAdmin(false)
-                    }}
-                    className="flex gap-2 justify-center items-center !text-sm !rounded-3xl !px-3"
-                  >
-                    Cerrar Sesión <FiLogIn size={20} />
-                  </Button>
-                </>
+              isAdmin &&
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                className="flex gap-2 items-center !px-3 font-semibold bg-sky-500"
+              >
+                Añadir Empleado <FaUserPlus />
+              </Button>
             }
           </div>
         </div>
@@ -189,6 +204,15 @@ const Home = () => {
             <div className="py-40 flex justify-center items-center gap-4">
               <Spinner size="normal" /> <span className="text-lg font-semibold">Cargando...</span>
             </div>
+        }
+        {
+          showCreateModal &&
+          <CreateEmployeeModal
+            departments={departments}
+            searchExtensions={searchExtensions}
+            showModal={showCreateModal}
+            setModal={setShowCreateModal}
+          />
         }
       </section>
     </main>

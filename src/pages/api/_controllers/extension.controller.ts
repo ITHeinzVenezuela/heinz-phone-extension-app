@@ -20,8 +20,8 @@ class ExtensionController {
   }
 
   getAllInfo = async (departmentId: string | undefined) => {
-    const employeeService = new EmployeesController()
-    const departmentService = new DeparmentController()
+    const employeeController = new EmployeesController()
+    const departmentController = new DeparmentController()
 
     const extensions = await this.getAll(departmentId)
 
@@ -31,9 +31,9 @@ class ExtensionController {
 
     // Trabajadores
     if (departmentId) {
-      employees = await employeeService.findBy("departmentId", departmentId)
+      employees = await employeeController.findBy("departmentId", departmentId)
     } else {
-      employees = await employeeService.findByFichas(fichas)
+      employees = await employeeController.findByFichas(fichas)
     }
 
     // Eliminando duplicados de IDs
@@ -45,7 +45,7 @@ class ExtensionController {
     if (employees.length) {
 
       // Departamentos
-      const departments = await departmentService.findBy(deparmentIds)
+      const departments = await departmentController.findBy(deparmentIds)
 
       console.log('departments', departments)
 

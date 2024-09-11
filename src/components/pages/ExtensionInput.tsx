@@ -43,7 +43,9 @@ const ExtensionInput = ({ id, number, employee, setNumber, handleChange }: Props
         setWarningMessage("")
       }
     } catch (error) {
+      setLoading(false)
       console.log('error', error)
+      alert("Ha habido un error comprobando la extensión")
     }
   }
 

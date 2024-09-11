@@ -1,14 +1,7 @@
-import { Department } from '@/pages/api/_schemas/department.schema'
-import { Employee } from '@/pages/api/_schemas/employee.schema'
-import { EmployeeExtension, Extension } from '@/pages/api/_schemas/extension.schema'
-import DeparmentService from '@/services/departments'
-import EmployeesService from '@/services/employees'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { EmployeeExtension } from '@/pages/api/_schemas/extension.schema'
+import React, { useState } from 'react'
 import Button from '../widgets/Button'
 import ModifyModal from './ModifyModal'
-
-const employeeService = new EmployeesService()
-const departmentService = new DeparmentService()
 
 type Props = {
   isAdmin: boolean,

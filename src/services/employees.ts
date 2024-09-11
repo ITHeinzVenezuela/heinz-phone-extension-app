@@ -6,13 +6,22 @@ class EmployeesService {
     const { data } = await API.get<Employee[]>("/api/employees")
     return data;
   }
-  findBy = async (body: any) => {
-    const { data } = await API.post<Employee[]>("/api/employees", body)
-    return data;
-  }
+ 
   findOne = async (ficha: Employee["ficha"]) => {
-    const { data } = await API.post<Employee[]>("/api/employees", { ficha })
+    const { data } = await API.get<Employee[]>(`/api/employees?ficha=${ficha}`)
     return data[0];
+  }
+  
+  create = async (employee: Employee) => {
+    await API.post<Employee[]>(`/api/employees`, employee)
+  }
+  
+  update = async (ficha: Employee["ficha"], employee: Employee) => {
+
+  }
+  
+  delete = async (ficha: Employee["ficha"]) => {
+
   }
 }
 

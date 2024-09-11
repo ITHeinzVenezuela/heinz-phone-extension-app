@@ -18,19 +18,19 @@ const allowedMethods = (method: string) => {
 const departmentHandler = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
     const METHOD = request.method as string
-    const deparment = new DeparmentController()
+    const deparmentController = new DeparmentController()
     console.log("department handler")
 
     if (allowedMethods(METHOD)) {
 
       if (METHOD === "GET") {
-        const deparments = await deparment.getAll()
+        const deparments = await deparmentController.getAll()
         response.status(OK).json(deparments)
       }
 
       if (METHOD === "POST") {
         const deparmentIds: Department["id"][] = request.body
-        const deparments = await deparment.findBy(deparmentIds)
+        const deparments = await deparmentController.findBy(deparmentIds)
         response.status(OK).json(deparments)
       }
 

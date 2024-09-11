@@ -24,7 +24,7 @@ type QueryProps = {
 const employeeHandler = async (request: NextApiRequest, response: NextApiResponse) => {
   try {
     const METHOD = request.method as string
-    const employee = new EmployeesController()
+    const employeeController = new EmployeesController()
     console.log("employee handler")
 
     if (allowedMethods(METHOD)) {
@@ -40,18 +40,18 @@ const employeeHandler = async (request: NextApiRequest, response: NextApiRespons
           const validatedField = FindEmployeeBySchema.parse(field)
           const validatedValue = EmployeeFichaSchema.parse(value)
 
-          const foundEmployee = await employee.findBy(validatedField, validatedValue)
+          const foundEmployee = await employeeController.findBy(validatedField, validatedValue)
           response.status(OK).json(foundEmployee)
           
         } else {
-          const employees = await employee.getAll()
+          const employees = await employeeController.getAll()
           response.status(OK).json(employees)
         }
       }
 
       if (METHOD === "POST") {
         const validatedFormat = EmployeeSchema.parse(request.body)
-        const createdEmployee = await employee.create(validatedFormat)
+        const createdEmployee = await employeeController.create(validatedFormat)
         response.status(CREATED).json(createdEmployee);
       }
 
@@ -61,14 +61,14 @@ const employeeHandler = async (request: NextApiRequest, response: NextApiRespons
         const validatedFormat = EmployeeSchema.parse(request.body)
         const validatedFicha = EmployeeFichaSchema.parse(number)
         
-        const updatedEmployee = await employee.update(validatedFicha, validatedFormat)
+        const updatedEmployee = await employeeController.update(validatedFicha, validatedFormat)
         response.status(OK).json(updatedEmployee);
       }
 
       if (METHOD === "DELETE") {
         const ficha = request.query.ficha as EmployeeFicha
         const validatedFicha = EmployeeFichaSchema.parse(ficha)
-        await employee.delete(validatedFicha)
+        await employeeController.delete(validatedFicha)
         response.status(NO_CONTENT).json(undefined);
       }
 
