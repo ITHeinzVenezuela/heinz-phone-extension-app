@@ -9,22 +9,25 @@ import EmployeesService from '@/services/employees'
 
 type Props = {
   showModal: boolean,
+  modifyEmployee?: Employee,
   setModal: Dispatch<SetStateAction<boolean>>,
   searchExtensions: () => Promise<void>,
   departments: Department[],
 }
 
-const CreateEmployeeModal = ({ showModal, setModal, searchExtensions, departments }: Props) => {
+const CreateEmployeeModal = ({ showModal, setModal, modifyEmployee, searchExtensions, departments }: Props) => {
 
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [employee, setEmployee] = useState<Employee>({
+  const defaulValue = {
     ficha: "",
     name: "",
     cedula: "",
     departmentId: "",
     contractor: true,
-  })
+  }
+
+  const [employee, setEmployee] = useState<Employee>(modifyEmployee ? modifyEmployee : defaulValue)
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault()
@@ -32,15 +35,19 @@ const CreateEmployeeModal = ({ showModal, setModal, searchExtensions, department
       setLoading(true)
 
       console.log('employee', employee)
-      
-      const employeeService = new EmployeesService()
 
-      await employeeService.create(employee)
+      const employeeService = new EmployeesService()
       
-      alert("Se ha creado el empleado exitosamente")
-      
+      if(modifyEmployee){
+        await employeeService.update(modifyEmployee.ficha, employee)
+      }else{
+        await employeeService.create(employee)
+      }
+
       await searchExtensions()
       
+      alert("Se ha creado el empleado exitosamente")
+
       setModal(false)
       // setLoading(false)
 
@@ -70,7 +77,7 @@ const CreateEmployeeModal = ({ showModal, setModal, searchExtensions, department
 
   const CI_MAX_LENGTH = 8
 
-  const { name, ficha } = employee
+  const { name, ficha, departmentId } = employee
 
   return (
     <Modal {...{ showModal, setModal }} targetModal="SmallModal">
@@ -104,11 +111,13 @@ const CreateEmployeeModal = ({ showModal, setModal, searchExtensions, department
             onChange={handleChange}
             required
           >
-            <option value="" unselectable="on" >-</option>
+            {/* <option value="">Otros</option> */}
             {
-              sortDepartments(departments).map(({ id, name }) =>
-                <option value={id}>{name}</option>
-              )
+              departments.map(({ id, name }) => {
+                return (
+                  <option value={id} selected={id === departmentId}>{name}</option>
+                )
+              })
             }
           </select>
         </label>
@@ -117,7 +126,7 @@ const CreateEmployeeModal = ({ showModal, setModal, searchExtensions, department
           color="secondary"
           loading={loading}
         >
-          Crear Empleado
+          {modifyEmployee ? "Modificar Empleado" : "Crear Empleado"}
         </Button>
       </form>
     </Modal>

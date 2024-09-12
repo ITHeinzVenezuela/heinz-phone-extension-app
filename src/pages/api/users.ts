@@ -45,8 +45,8 @@ const userHandler = async (request: NextApiRequest, response: NextApiResponse) =
       }
 
       if (METHOD === "PUT") {
-        const userId = parseInt(request.query.userId as string)
-        const validatedId = UserEmailSchema.parse(userId)
+        const userEmail = request.query.email as string
+        const validatedId = UserEmailSchema.parse(userEmail)
         const validatedFormat = UpdateUserSchema.parse(request.body)
         const updatedUser = await user.update(validatedId, validatedFormat)
         response.status(OK).json(updatedUser);

@@ -13,41 +13,40 @@ class ExtensionController {
     // Departamentos
     const queryString = `
       SELECT * FROM [HPE_Extensions]
-      ${departmentId ? `WHERE departmentId = ${departmentId}` : ""}
+      ${departmentId !== "all" ? `WHERE departmentId = '${departmentId}'` : ""}
     `
     const [data] = await sequelize.query(queryString) as [Extension[], unknown]
     return data;
   }
 
   getAllInfo = async (departmentId: string | undefined) => {
+
     const employeeController = new EmployeesController()
     const departmentController = new DeparmentController()
 
     const extensions = await this.getAll(departmentId)
-
     const fichas = extensions.map(({ ficha }) => ficha)
 
-    let employees: Employee[] = []
+    console.log('id2', departmentId)
+    console.log('departmentId2: ', departmentId)
 
+    let employees: Employee[] = []
     // Trabajadores
-    if (departmentId) {
-      employees = await employeeController.findBy("departmentId", departmentId)
-    } else {
+    if (departmentId === "all") {
       employees = await employeeController.findByFichas(fichas)
+    } else if (departmentId) {
+      employees = await employeeController.findBy("departmentId", departmentId)
+    } else if(departmentId === ""){
+      employees = await employeeController.getContractorsBy("departmentId", departmentId)
     }
 
     // Eliminando duplicados de IDs
     const deparmentIds = [...new Set(employees.map(({ departmentId }) => departmentId))]
-
-    console.log('deparmentIds', deparmentIds)
-    console.log('employees', employees)
-
+    
     if (employees.length) {
 
       // Departamentos
       const departments = await departmentController.findBy(deparmentIds)
-
-      console.log('departments', departments)
 
       const data: EmployeeExtension[] = employees.map((employee) => {
         const { ficha, departmentId } = employee
@@ -61,21 +60,9 @@ class ExtensionController {
           department,
         }
       })
-      
-      // const data: EmployeeExtension[] = extensions.map(({ number, ficha }) => {
 
-      //   const employee = employees.find((employee) => employee.ficha === ficha) as Employee
-      //   const department = departments.find((department) => department.id === employee.departmentId) as Deparment
-
-      //   return {
-      //     number,
-      //     employee,
-      //     department,
-      //   }
-      // })
-      
       return data;
-      
+
     } else {
       return []
     }
@@ -98,17 +85,17 @@ class ExtensionController {
 
       // if (!foundExtension) {
 
-        const [keys, values] = getInsertAttributes(extension)
+      const [keys, values] = getInsertAttributes(extension)
 
-        // Extensions
-        const queryString = `
+      // Extensions
+      const queryString = `
           INSERT [HPE_Extensions]\n${keys}
           VALUES ${values}
         `
 
-        const [data] = await sequelize.query(queryString) as [Extension[], unknown]
+      const [data] = await sequelize.query(queryString) as [Extension[], unknown]
 
-        return data[0]
+      return data[0]
 
       // } else {
       //   throw createHttpError.BadRequest("Extension alredy exists!")
@@ -151,14 +138,14 @@ class ExtensionController {
     }
   }
 
-  delete = async (extensionNumber: ExtensionNumber, ficha: Employee["ficha"]) => {
-    console.log('extensionNumber', extensionNumber)
+  delete = async (numbers: string[] | string, ficha: Employee["ficha"]) => {
+    console.log('numbers', numbers)
     console.log('ficha', ficha)
     try {
       const queryString = `
         DELETE FROM [HPE_Extensions]
-        WHERE number = '${extensionNumber}'
-        AND ficha = ${ficha}
+        WHERE ficha = ${ficha}
+        AND number IN (${numbers})
       `
       await sequelize.query(queryString)
 

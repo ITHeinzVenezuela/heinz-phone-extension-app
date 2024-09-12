@@ -36,6 +36,16 @@ class EmployeesController {
     return employees;
   }
 
+  getContractorsBy = async (field: FindEmployeeBy, value: string | Employee["departmentId"]) => {
+    // Trabajadores Contratas
+    const queryString2 = `
+      SELECT * FROM [HCRM01].[dbo].[HPE_Employees]
+      WHERE ${field} = '${value}'
+    `
+    const [contractorEmployees] = await sequelize.query(queryString2) as [Employee[], unknown]
+    return contractorEmployees;
+  }
+  
   findBy = async (field: FindEmployeeBy, value: string | Employee["departmentId"]) => {
 
     const tableField = field === "departmentId" ? "CODDEP" : field
@@ -50,13 +60,9 @@ class EmployeesController {
     `
     
     // Trabajadores Contratas
-    const queryString2 = `
-      SELECT * FROM [HCRM01].[dbo].[HPE_Employees]
-      WHERE ${field} = '${value}'
-    `
+    const contractorEmployees = await this.getContractorsBy(field, value)
     
     const [heinzEmployees] = await sequelize.query(queryString1) as [Employee[], unknown]
-    const [contractorEmployees] = await sequelize.query(queryString2) as [Employee[], unknown]
     
     const heinzData = heinzEmployees.map((employee)=>{
       return {
@@ -74,7 +80,7 @@ class EmployeesController {
     //   throw createHttpError.NotFound("Employee not found!")
     // }
   }
-
+  
   findByFichas = async (fichas: Employee["ficha"][]) => {
 
     // Trabajadores

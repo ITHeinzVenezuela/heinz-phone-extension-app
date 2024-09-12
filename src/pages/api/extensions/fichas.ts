@@ -26,7 +26,6 @@ const extensionHandler = async (request: NextApiRequest, response: NextApiRespon
 
       if (METHOD === "GET") {
         const departmentId = request.query.departmentId
-        console.log("departmentId", departmentId);
         const extensions = await extension.getAllInfo(departmentId as string)
         response.status(OK).json(extensions)
       }

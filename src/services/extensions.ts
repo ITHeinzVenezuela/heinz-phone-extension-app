@@ -8,7 +8,7 @@ class ExtensionService {
     const { data } = await API.get<Extension[]>("/api/extensions")
     return data;
   }
-  
+
   getAllInfo = async (departmentId: DepartmentId) => {
     const { data } = await API.get<EmployeeExtension[]>(`/api/extensions/fichas?departmentId=${departmentId}`)
     return data;
@@ -29,8 +29,9 @@ class ExtensionService {
     return data;
   }
 
-  delete = async (number: ExtensionNumber, ficha: Employee["ficha"]) => {
-    await API.delete(`/api/extensions?number=${number}&ficha=${ficha}`)
+  delete = async (number: ExtensionNumber[], ficha: Employee["ficha"]) => {
+    const numberQueryString = number.map(item => `number=${item}`).join("&")
+    await API.delete(`/api/extensions?${numberQueryString}&ficha=${ficha}`)
   }
 }
 

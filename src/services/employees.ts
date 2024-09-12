@@ -17,11 +17,11 @@ class EmployeesService {
   }
   
   update = async (ficha: Employee["ficha"], employee: Employee) => {
-
+    await API.put<Employee[]>(`/api/employees?ficha=${ficha}`, employee)
   }
   
   delete = async (ficha: Employee["ficha"]) => {
-
+    await API.delete<Employee[]>(`/api/employees?ficha=${ficha}`)
   }
 }
 

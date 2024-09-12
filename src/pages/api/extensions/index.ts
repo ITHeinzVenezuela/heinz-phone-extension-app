@@ -53,10 +53,9 @@ const extensionHandler = async (request: NextApiRequest, response: NextApiRespon
       }
 
       if (METHOD === "DELETE") {
-        const number = parseInt(request.query.number as string)
+        const number = request.query.number as string | string[]
         const ficha = request.query.ficha as string
-        const validatedNumber = ExtensionNumberSchema.parse(number)
-        await extension.delete(validatedNumber, ficha)
+        await extension.delete(number, ficha)
         response.status(NO_CONTENT).json(undefined);
       }
 

@@ -60,7 +60,7 @@ const ModifyModal = ({ extension, handleModal, searchExtensions }: Props) => {
         } else {
           // debugger
           if (defaultNumber) {
-            await extensionService.delete(defaultNumber, employee.ficha)
+            await extensionService.delete([defaultNumber], employee.ficha)
             alert(`Se ha eliminado la extensión "${defaultNumber}" con éxito`)
           }
         }

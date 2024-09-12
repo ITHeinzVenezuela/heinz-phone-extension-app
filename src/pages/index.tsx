@@ -7,7 +7,6 @@ import ExtensionRow from '@/components/pages/ExtensionRow'
 import Button from '@/components/widgets/Button'
 import { TbPhoneX } from "react-icons/tb";
 import { TbPhoneCheck } from "react-icons/tb";
-import { FiLogIn } from "react-icons/fi";
 import { FaUserPlus } from "react-icons/fa6";
 
 import Spinner from '@/components/widgets/Spinner'
@@ -16,13 +15,13 @@ import { useRouter } from 'next/router'
 import { getFromSStorage } from '@/utils/sessionStorage'
 import { UserCredentials } from './api/_schemas/user.schema'
 import CreateEmployeeModal from '@/components/pages/CreateEmployeeModal'
+import Header from '@/components/widgets/Header'
+import { Employee } from './api/_schemas/employee.schema'
 
 const extension = new ExtensionService()
 const department = new DeparmentService()
 
 const Home = () => {
-
-  const router = useRouter()
 
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
 
@@ -30,6 +29,8 @@ const Home = () => {
     name: "",
     email: "",
   })
+
+  const [modifyEmployee, setModifyEmployee] = useState<Employee | undefined>(undefined)
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -39,7 +40,7 @@ const Home = () => {
 
   const [noExtensionVisible, setNoExtensionVisible] = useState<boolean>(false)
 
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("")
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("all")
 
   useEffect(() => {
     const user = getFromSStorage<UserCredentials>("user")
@@ -68,8 +69,13 @@ const Home = () => {
   }, [])
 
   const searchExtensions = async () => {
-    const extensions = await extension.getAllInfo(selectedDepartment)
-    setExtensions(extensions)
+    try {
+      const extensions = await extension.getAllInfo(selectedDepartment)
+      setExtensions(extensions)
+    } catch (error) {
+      console.log('error', error)      
+      alert("Ha ocurrido un error tratando de actualizar el listado de extensiones")
+    }
   }
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
@@ -98,124 +104,106 @@ const Home = () => {
   const data = noExtensionVisible ? extensions : asignedExtensions
 
   return (
-    <main>
-      <header className="bg-slate-200 p-4">
-        <nav className="flex gap-2 items-center justify-between">
-          <img src="https://i.imgur.com/yoGBPON.png" className="h-[50px] w-[unset]" alt="" />
-          <div className="flex gap-2 items-center">
-            {
-              !isAdmin ?
-                <Button
-                  color="info"
-                  onClick={() => router.push("/login")}
-                  className="flex gap-2 justify-center items-center !text-sm !rounded-3xl !px-3"
-                >
-                  Iniciar Sesión <FiLogIn size={20} />
-                </Button>
-                :
-                <>
-                  <span>{user.name}</span>
-                  <Button
-                    color="gray"
-                    onClick={() => {
-                      sessionStorage.clear()
-                      setIsAdmin(false)
-                    }}
-                    className="flex gap-2 justify-center items-center !text-sm !rounded-3xl !px-3"
-                  >
-                    Cerrar Sesión <FiLogIn size={20} />
-                  </Button>
-                </>
-            }
-          </div>
-        </nav>
-      </header>
-      <section className="p-4">
-        <div className="flex justify-between pb-4">
-          <form className="flex gap-4" onSubmit={handleSubmit}>
-            <label htmlFor="" className="Input">
-              <select className="Input" name="department" id="" onChange={handleChange}>
-                <option value="">TODOS</option>
-                {
-                  sortDepartments(departments).map(({ id, name }) =>
-                    <option value={id}>{name}</option>
-                  )
-                }
-              </select>
-            </label>
-
-            {/* <Input
-              id="name"
-              // value={name}
-              className="w-full"
-              // title="Nombre del Chofer"
-              placeholder="ORLANDO MENDOZA"
-            // onChange={handleChange}
-            /> */}
-            <Button type="submit" color="secondary">Buscar</Button>
-
-            <Button
-              color={noExtensionVisible ? "gray" : "success"}
-              className="w-[50px] h-[50px] flex justify-center items-center"
-              onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
-            >
-              {
-                noExtensionVisible ? <TbPhoneX size={20} /> : <TbPhoneCheck size={20} />
-              }
-            </Button>
-
-          </form>
-          <div>
-            {
-              isAdmin &&
-              <Button
-                onClick={() => setShowCreateModal(true)}
-                className="flex gap-2 items-center !px-3 font-semibold bg-sky-500"
-              >
-                Añadir Empleado <FaUserPlus />
-              </Button>
-            }
-          </div>
-        </div>
-        {
-          !loading ?
-            <table>
-              <thead>
-                <tr>
-                  <th>Ficha</th>
-                  <th>Nombre</th>
-                  <th>Departamento</th>
-                  <th>Extensión</th>
+    <>
+      <Header {...{ user, isAdmin, setIsAdmin }} />
+      <main>
+        <section className="p-4">
+          <div className="flex justify-between pb-4">
+            <form className="flex gap-4" onSubmit={handleSubmit}>
+              <label htmlFor="" className="Input">
+                <select className="Input" name="department" id="" onChange={handleChange}>
+                  <option value="all">TODOS</option>
                   {
-                    isAdmin &&
-                    <th>Acciones</th>
+                    departments.map(({ id, name }) =>
+                      <option value={id}>{name}</option>
+                    )
                   }
-                </tr>
-              </thead>
-              <tbody>
+                </select>
+              </label>
+
+              {/* <Input
+                id="name"
+                // value={name}
+                className="w-full"
+                // title="Nombre del Chofer"
+                placeholder="ORLANDO MENDOZA"
+              // onChange={handleChange}
+              /> */}
+              <Button type="submit" color="secondary">Buscar</Button>
+
+              <Button
+                color={noExtensionVisible ? "gray" : "success"}
+                className="w-[50px] h-[50px] flex justify-center items-center"
+                onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
+              >
                 {
-                  data.map((extension) =>
-                    <ExtensionRow {...{ extension, isAdmin, searchExtensions }} />
-                  )
+                  noExtensionVisible ? <TbPhoneX size={20} /> : <TbPhoneCheck size={20} />
                 }
-              </tbody>
-            </table>
-            :
-            <div className="py-40 flex justify-center items-center gap-4">
-              <Spinner size="normal" /> <span className="text-lg font-semibold">Cargando...</span>
+              </Button>
+
+            </form>
+            <div>
+              {
+                isAdmin &&
+                <Button
+                  className="flex gap-2 items-center !px-3 font-semibold bg-sky-500"
+                  onClick={() => {
+                    setShowCreateModal(true)
+                    setModifyEmployee(undefined)
+                  }}
+                >
+                  Añadir Empleado <FaUserPlus />
+                </Button>
+              }
             </div>
-        }
-        {
-          showCreateModal &&
-          <CreateEmployeeModal
-            departments={departments}
-            searchExtensions={searchExtensions}
-            showModal={showCreateModal}
-            setModal={setShowCreateModal}
-          />
-        }
-      </section>
-    </main>
+          </div>
+          {
+            !loading ?
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ficha</th>
+                    <th>Nombre</th>
+                    <th>Departamento</th>
+                    <th>Extensión</th>
+                    {
+                      isAdmin &&
+                      <th>Acciones</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    data.map((extension) =>
+                      <ExtensionRow {...{
+                        extension,
+                        isAdmin,
+                        searchExtensions,
+                        setShowCreateModal,
+                        setModifyEmployee
+                      }} />
+                    )
+                  }
+                </tbody>
+              </table>
+              :
+              <div className="py-40 flex justify-center items-center gap-4">
+                <Spinner size="normal" /> <span className="text-lg font-semibold">Cargando...</span>
+              </div>
+          }
+          {
+            showCreateModal &&
+            <CreateEmployeeModal
+              modifyEmployee={modifyEmployee}
+              departments={departments}
+              searchExtensions={searchExtensions}
+              showModal={showCreateModal}
+              setModal={setShowCreateModal}
+            />
+          }
+        </section>
+      </main>
+    </>
   )
 }
 

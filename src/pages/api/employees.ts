@@ -56,10 +56,10 @@ const employeeHandler = async (request: NextApiRequest, response: NextApiRespons
       }
 
       if (METHOD === "PUT") {
-        const number = parseInt(request.query.number as string)
+        const ficha = request.query.ficha as string
         
         const validatedFormat = EmployeeSchema.parse(request.body)
-        const validatedFicha = EmployeeFichaSchema.parse(number)
+        const validatedFicha = EmployeeFichaSchema.parse(ficha)
         
         const updatedEmployee = await employeeController.update(validatedFicha, validatedFormat)
         response.status(OK).json(updatedEmployee);
