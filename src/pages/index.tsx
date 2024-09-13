@@ -17,6 +17,8 @@ import { UserCredentials } from './api/_schemas/user.schema'
 import CreateEmployeeModal from '@/components/pages/CreateEmployeeModal'
 import Header from '@/components/widgets/Header'
 import { Employee } from './api/_schemas/employee.schema'
+import { IoMdCloudDownload } from "react-icons/io";
+import PDFRender from '@/components/widgets/PDFRenderer'
 
 const extension = new ExtensionService()
 const department = new DeparmentService()
@@ -24,6 +26,7 @@ const department = new DeparmentService()
 const Home = () => {
 
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
+  const [rendered, setRendered] = useState<boolean>(false)
 
   const [user, setUser] = useState<UserCredentials>({
     name: "",
@@ -73,7 +76,7 @@ const Home = () => {
       const extensions = await extension.getAllInfo(selectedDepartment)
       setExtensions(extensions)
     } catch (error) {
-      console.log('error', error)      
+      console.log('error', error)
       alert("Ha ocurrido un error tratando de actualizar el listado de extensiones")
     }
   }
@@ -108,7 +111,7 @@ const Home = () => {
       <Header {...{ user, isAdmin, setIsAdmin }} />
       <main>
         <section className="p-4">
-          <div className="flex justify-between pb-4">
+          <div className="flex justify-between items-center pb-4">
             <form className="flex gap-4" onSubmit={handleSubmit}>
               <label htmlFor="" className="Input">
                 <select className="Input" name="department" id="" onChange={handleChange}>
@@ -142,7 +145,18 @@ const Home = () => {
               </Button>
 
             </form>
-            <div>
+            <div className="flex gap-2">
+              <Button
+                className="flex gap-2 items-center !px-3 font-semibold bg-emerald-500"
+                onClick={() => { 
+                  setRendered(true)
+                  setTimeout(() => {
+                    setRendered(false)
+                  }, 3000)
+                }}
+              >
+                Descargar Listado <IoMdCloudDownload size={20}/>
+              </Button>
               {
                 isAdmin &&
                 <Button
@@ -200,6 +214,10 @@ const Home = () => {
               showModal={showCreateModal}
               setModal={setShowCreateModal}
             />
+          }
+          {
+            rendered && 
+            <PDFRender departments={departments} extensions={data} />
           }
         </section>
       </main>

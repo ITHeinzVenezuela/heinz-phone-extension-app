@@ -91,10 +91,18 @@ class EmployeesController {
         AND TRIM(ficha) IN (${fichas.map((ficha) => `''${ficha}''`)})
       ')
     `
-    const [data] = await sequelize.query(queryString) as [Employee[], unknown]
-
-    // if (data?.length) {
-    const foundEmployee = formatData(data)
+    const queryString2 = `
+      SELECT * FROM [HCRM01].[dbo].[HPE_Employees]
+      WHERE ficha IN (${fichas.map((ficha) => `'${ficha}'`)})
+    `
+    
+    const [heinzEmployees] = await sequelize.query(queryString) as [Employee[], unknown]
+    const [contractorEmployees] = await sequelize.query(queryString2) as [Employee[], unknown]
+    
+    const employees = [...heinzEmployees, ...contractorEmployees]
+    
+    // if (heinzEmployees?.length) {
+    const foundEmployee = formatData(employees)
     return foundEmployee;
     // } else {
     //   throw createHttpError.NotFound("Employee not found!")
