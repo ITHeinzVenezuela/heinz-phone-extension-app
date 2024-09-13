@@ -6,6 +6,8 @@ import { Department } from '@/pages/api/_schemas/department.schema'
 import Button from '../widgets/Button'
 import { sortDepartments } from '@/utils'
 import EmployeesService from '@/services/employees'
+import useNotification from '@/hooks/useNotification'
+import NotificationModal from '../widgets/NotificationModal'
 
 type Props = {
   showModal: boolean,
@@ -18,6 +20,8 @@ type Props = {
 const CreateEmployeeModal = ({ showModal, setModal, modifyEmployee, searchExtensions, departments }: Props) => {
 
   const [loading, setLoading] = useState<boolean>(false)
+  
+  const [status, handleStatus] = useNotification()
 
   const defaulValue = {
     ficha: "",
@@ -44,16 +48,25 @@ const CreateEmployeeModal = ({ showModal, setModal, modifyEmployee, searchExtens
         await employeeService.create(employee)
       }
 
+      handleStatus.open(({
+        type: "success",
+        title: "Creación de Empleado",
+        message: `Se ha creado el empleado exitosamente"`,
+      }))
+      
       await searchExtensions()
       
-      alert("Se ha creado el empleado exitosamente")
-
       setModal(false)
       // setLoading(false)
-
+      
     } catch (error) {
       setLoading(false)
       console.log(error);
+      handleStatus.open(({
+        type: "danger",
+        title: "Error ❌",
+        message: `Ha habido un error tratando de crear el empleado, intente de nuevo."`,
+      }))
     }
   }
 
@@ -129,6 +142,9 @@ const CreateEmployeeModal = ({ showModal, setModal, modifyEmployee, searchExtens
           {modifyEmployee ? "Modificar Empleado" : "Crear Empleado"}
         </Button>
       </form>
+      
+      <NotificationModal alertProps={[status, handleStatus]} />
+
     </Modal>
   )
 }

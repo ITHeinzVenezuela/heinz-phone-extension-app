@@ -5,6 +5,8 @@ import Input from '../widgets/Input'
 import Button from '../widgets/Button'
 import ExtensionService from '@/services/extensions'
 import ExtensionInput from './ExtensionInput'
+import useNotification from '@/hooks/useNotification'
+import NotificationModal from '../widgets/NotificationModal'
 
 type Props = {
   extension: EmployeeExtension,
@@ -19,6 +21,8 @@ const ModifyModal = ({ extension, handleModal, searchExtensions }: Props) => {
 
   const [showModal, setModal] = handleModal
 
+  const [status, handleStatus] = useNotification()
+  
   const { department, employee } = extension
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -55,13 +59,22 @@ const ModifyModal = ({ extension, handleModal, searchExtensions }: Props) => {
             await extensionService.create(extensionInfo)
           }
 
-          alert("Se ha asignado la extensión al trabajador")
-
+          handleStatus.open(({
+            type: "success",
+            title: "Asignación de Extensión",
+            message: `Se ha asignado la extensión al trabajador exitosamente"`,
+          }))
+          
+          
         } else {
           // debugger
           if (defaultNumber) {
             await extensionService.delete([defaultNumber], employee.ficha)
-            alert(`Se ha eliminado la extensión "${defaultNumber}" con éxito`)
+            handleStatus.open(({
+              type: "success",
+              title: "Eliminación de Extensión",
+              message: `Se ha eliminado la extensión "${defaultNumber}" con éxito"`,
+            }))
           }
         }
       }
@@ -81,7 +94,11 @@ const ModifyModal = ({ extension, handleModal, searchExtensions }: Props) => {
     } catch (error) {
       setLoading(false)
       console.log(error)
-      alert("Ha ocurrido un error asignandole la extensión al trabajador")
+      handleStatus.open(({
+        type: "danger",
+        title: "Error ❌",
+        message: `Ha ocurrido un error asignandole la extensión al trabajador"`,
+      }))
     }
   }
 
@@ -115,6 +132,7 @@ const ModifyModal = ({ extension, handleModal, searchExtensions }: Props) => {
         </div>
         <Button type="submit" color="info" className="w-full mt-4" loading={loading}>Asignar</Button>
       </form>
+      <NotificationModal alertProps={[status, handleStatus]} />
     </Modal>
   )
 }

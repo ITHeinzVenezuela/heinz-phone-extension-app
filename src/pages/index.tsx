@@ -19,6 +19,8 @@ import Header from '@/components/widgets/Header'
 import { Employee } from './api/_schemas/employee.schema'
 import { IoMdCloudDownload } from "react-icons/io";
 import PDFRender from '@/components/widgets/PDFRenderer'
+import NotificationModal from '@/components/widgets/NotificationModal'
+import useNotification from '@/hooks/useNotification'
 
 const extensionService = new ExtensionService()
 const departmentService = new DepartmentService()
@@ -28,6 +30,8 @@ const Home = () => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
   const [rendered, setRendered] = useState<boolean>(false)
 
+  const [status, handleStatus] = useNotification()
+  
   const [user, setUser] = useState<UserCredentials>({
     name: "",
     email: "",
@@ -77,7 +81,11 @@ const Home = () => {
       setExtensions(extensions)
     } catch (error) {
       console.log('error', error)
-      alert("Ha ocurrido un error tratando de actualizar el listado de extensiones")
+      handleStatus.open(({
+        type: "danger",
+        title: "Error ❌",
+        message: `Ha ocurrido un error tratando de actualizar el listado de extensiones"`,
+      }))
     }
   }
 
@@ -220,6 +228,7 @@ const Home = () => {
             <PDFRender departments={departments} extensions={data} />
           }
         </section>
+        <NotificationModal alertProps={[status, handleStatus]} />
       </main>
     </>
   )

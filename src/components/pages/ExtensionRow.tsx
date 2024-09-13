@@ -10,6 +10,7 @@ import EmployeesService from '@/services/employees';
 import useNotification from '@/hooks/useNotification';
 import ConfirmModal from '../widgets/ConfirmModal';
 import ExtensionService from '@/services/extensions';
+import NotificationModal from '../widgets/NotificationModal';
 
 type Props = {
   isAdmin: boolean,
@@ -25,6 +26,8 @@ const extensionService = new ExtensionService()
 const ExtensionRow = ({ extension, isAdmin, searchExtensions, setModifyEmployee, setShowCreateModal }: Props) => {
 
   const { number, employee, department } = extension
+  
+  const [status, handleStatus] = useNotification()
   
   const [showModifyModal, setModifyModal] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -57,13 +60,22 @@ const ExtensionRow = ({ extension, isAdmin, searchExtensions, setModifyEmployee,
         
         await searchExtensions()
         
-        alert("Se ha eliminado el empleado y sus extensiones con exito")
+        handleStatus.open(({
+          type: "success",
+          title: "Eliminación de empleado",
+          message: `Se ha eliminado el empleado y sus extensiones con exito.`,
+        }))
         
         setLoading(false)
         
       } catch (error) {
         setLoading(false)
         console.log('error', error)
+        handleStatus.open(({
+          type: "danger",
+          title: "Error ❌",
+          message: `Ha habido un error intentando eliminar el empleado, intente de nuevo.`,
+        }))
       }
     }
   }
@@ -118,6 +130,7 @@ const ExtensionRow = ({ extension, isAdmin, searchExtensions, setModifyEmployee,
         acceptAction={handleDelete.confirm}
         confirmProps={[confirm, handleConfirm]}
       />
+      <NotificationModal alertProps={[status, handleStatus]} />
     </tr>
   )
 }

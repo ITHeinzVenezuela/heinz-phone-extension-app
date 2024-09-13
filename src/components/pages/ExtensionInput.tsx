@@ -4,6 +4,8 @@ import ExtensionService from '@/services/extensions'
 import EmployeesService from '@/services/employees'
 import Spinner from '../widgets/Spinner'
 import { Employee } from '@/pages/api/_schemas/employee.schema'
+import NotificationModal from '../widgets/NotificationModal'
+import useNotification from '@/hooks/useNotification'
 
 type Props = {
   id: string,
@@ -18,6 +20,8 @@ const ExtensionInput = ({ id, number, employee, setNumber, handleChange }: Props
   const [warningMessage, setWarningMessage] = useState<string>("")
 
   const [loading, setLoading] = useState<boolean>(false)
+  
+  const [status, handleStatus] = useNotification()
 
   const handleBlur = async () => {
     try {
@@ -45,7 +49,11 @@ const ExtensionInput = ({ id, number, employee, setNumber, handleChange }: Props
     } catch (error) {
       setLoading(false)
       console.log('error', error)
-      alert("Ha habido un error comprobando la extensión")
+      handleStatus.open(({
+        type: "danger",
+        title: "Error ❌",
+        message: `Ha habido un error comprobando la extensión."`,
+      }))
     }
   }
 
@@ -76,6 +84,7 @@ const ExtensionInput = ({ id, number, employee, setNumber, handleChange }: Props
               }
             </>
         }
+        <NotificationModal alertProps={[status, handleStatus]} />
       </div>
     </div>
   )

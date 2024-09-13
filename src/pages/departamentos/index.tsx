@@ -13,6 +13,9 @@ import EmployeesService from '@/services/employees'
 import { Employee } from '../api/_schemas/employee.schema'
 import { TbPhoneX } from "react-icons/tb";
 import { TbPhoneCheck } from "react-icons/tb";
+import DepartmentRow from '@/components/pages/DepartmentRow'
+import useNotification from '@/hooks/useNotification'
+import NotificationModal from '@/components/widgets/NotificationModal'
 
 const extensionService = new ExtensionService()
 const employeeService = new EmployeesService()
@@ -20,6 +23,8 @@ const departmentService = new DepartmentService()
 
 const Departamentos = () => {
 
+  const [status, handleStatus] = useNotification()
+  
   const [user, setUser] = useState<UserCredentials>({
     name: "",
     email: "",
@@ -33,7 +38,7 @@ const Departamentos = () => {
   const [loading, setLoading] = useState<boolean>(false)
 
   const [noExtensionVisible, setNoExtensionVisible] = useState<boolean>(false)
-  
+
   useEffect(() => {
     const user = getFromSStorage<UserCredentials>("user")
     if (user) {
@@ -70,7 +75,11 @@ const Departamentos = () => {
       setExtensions(extensions)
     } catch (error) {
       console.log('error', error)
-      alert("Ha ocurrido un error tratando de actualizar el listado de extensiones")
+      handleStatus.open(({
+        type: "danger",
+        title: "Error ❌",
+        message: `Ha ocurrido un error tratando de actualizar el listado de extensiones"`,
+      }))
     }
   }
 
@@ -78,17 +87,17 @@ const Departamentos = () => {
     <>
       <Header {...{ user, isAdmin, setIsAdmin }} />
       <main className="p-4">
-        <h1>Departamentos:</h1>
+        {/* <h1>Departamentos:</h1> */}
         <div>
-        <Button
-          color={noExtensionVisible ? "gray" : "success"}
-          className="w-[50px] h-[50px] flex justify-center items-center"
-          onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
-        >
-          {
-            noExtensionVisible ? <TbPhoneX size={20} /> : <TbPhoneCheck size={20} />
-          }
-        </Button>
+          <Button
+            color={noExtensionVisible ? "gray" : "success"}
+            className="w-[50px] h-[50px] flex justify-center items-center"
+            onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
+          >
+            {
+              noExtensionVisible ? <TbPhoneX size={20} /> : <TbPhoneCheck size={20} />
+            }
+          </Button>
         </div>
         {
           !loading ?
@@ -104,43 +113,34 @@ const Departamentos = () => {
               </thead>
               <tbody>
                 {
-                  departments.map(({ id, name }) => {
+                  departments.map((department) => {
+
+                    const { id, name } = department
 
                     const data = employees.filter(({ departmentId }) => departmentId === id)
                     const dataExtensions = extensions.filter(({ department }) => department.id === id)
                     const asignedExtensions = [...new Set(dataExtensions.map(({ number }) => number).flat())].length
-                    
+
                     // data.map(({ficha})=>{
                     //   const e = extensions.find(({employee})=> employee.ficha === ficha)
                     // })
-                    
+
                     // Boolean(data.length) && !noExtensionVisible &&
                     return (
-                      noExtensionVisible ? 
-                        data.length !== 0 &&
-                        <tr>
-                          <td className="!p-1">{id}</td>
-                          <td className="!p-1">{name}</td>
-                          <td className="!p-1 text-center">{data.length}</td>
-                          <td className="!p-1 text-center">{asignedExtensions}</td>
-                          <td className="!p-1">
-                            <Button color="success" onClick={() => { }}>
-                              <FaPowerOff />
-                            </Button>
-                          </td>
-                        </tr>
+                      noExtensionVisible ?
+                        data.length !== 0 && (
+                          <DepartmentRow {...{
+                            department,
+                            employees: data.length,
+                            asignedExtensions,
+                          }} />
+                        )
                         :
-                      <tr>
-                        <td className="!p-1">{id}</td>
-                        <td className="!p-1">{name}</td>
-                        <td className="!p-1 text-center">{data.length}</td>
-                        <td className="!p-1 text-center">{asignedExtensions}</td>
-                        <td className="!p-1">
-                          <Button color="success" onClick={() => { }}>
-                            <FaPowerOff />
-                          </Button>
-                        </td>
-                      </tr>
+                        <DepartmentRow {...{
+                          department,
+                          employees: data.length,
+                          asignedExtensions,
+                        }} />
                     )
                   })
                 }
@@ -151,6 +151,7 @@ const Departamentos = () => {
               <Spinner size="normal" /> <span className="text-lg font-semibold">Cargando...</span>
             </div>
         }
+        <NotificationModal alertProps={[status, handleStatus]} />
       </main>
     </>
   )
