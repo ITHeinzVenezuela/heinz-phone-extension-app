@@ -2,7 +2,7 @@ import { Employee } from "@/pages/api/_schemas/employee.schema";
 import API from "./api";
 import { Department, DepartmentId } from "@/pages/api/_schemas/department.schema";
 
-class DeparmentService {
+class DepartmentService {
   getAll = async () => {
     const { data } = await API.get<Department[]>("/api/departments")
     return data;
@@ -14,4 +14,4 @@ class DeparmentService {
   }
 }
 
-export default DeparmentService;
+export default DepartmentService;

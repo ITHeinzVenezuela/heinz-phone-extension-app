@@ -30,8 +30,18 @@ class EmployeesController {
         WHERE status = ''1''
       ')
     `
-    const [data] = await sequelize.query(queryString) as [Employee[], unknown]
-    const employees = formatData(data)
+    
+    // Trabajadores Contratas
+    const queryString2 = `
+      SELECT * FROM [HCRM01].[dbo].[HPE_Employees]
+    `
+    
+    
+    const [heinzEmployees] = await sequelize.query(queryString) as [Employee[], unknown]
+    const [contractorEmployees] = await sequelize.query(queryString2) as [Employee[], unknown]
+    
+    
+    const employees = formatData([...heinzEmployees, ...contractorEmployees])
 
     return employees;
   }

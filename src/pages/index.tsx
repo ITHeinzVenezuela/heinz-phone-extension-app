@@ -2,7 +2,7 @@ import ExtensionService from '@/services/extensions'
 import React, { ChangeEventHandler, FormEventHandler, useEffect, useState } from 'react'
 import { EmployeeExtension, Extension } from './api/_schemas/extension.schema'
 import { Department } from './api/_schemas/department.schema'
-import DeparmentService from '@/services/departments'
+import DepartmentService from '@/services/departments'
 import ExtensionRow from '@/components/pages/ExtensionRow'
 import Button from '@/components/widgets/Button'
 import { TbPhoneX } from "react-icons/tb";
@@ -20,8 +20,8 @@ import { Employee } from './api/_schemas/employee.schema'
 import { IoMdCloudDownload } from "react-icons/io";
 import PDFRender from '@/components/widgets/PDFRenderer'
 
-const extension = new ExtensionService()
-const department = new DeparmentService()
+const extensionService = new ExtensionService()
+const departmentService = new DepartmentService()
 
 const Home = () => {
 
@@ -59,7 +59,7 @@ const Home = () => {
         setLoading(true)
         await searchExtensions()
 
-        const departments = await department.getAll()
+        const departments = await departmentService.getAll()
         setDepartments(departments)
 
         setLoading(false)
@@ -73,7 +73,7 @@ const Home = () => {
 
   const searchExtensions = async () => {
     try {
-      const extensions = await extension.getAllInfo(selectedDepartment)
+      const extensions = await extensionService.getAllInfo(selectedDepartment)
       setExtensions(extensions)
     } catch (error) {
       console.log('error', error)
