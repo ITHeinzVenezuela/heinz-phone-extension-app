@@ -12,6 +12,21 @@ class DepartmentService {
     const { data } = await API.get<Department>(`/api/departments?id=${departmentId}`)
     return data;
   }
+
+  verifyActiveDepartments = async () => {
+    const { data } = await API.get<Department>(`/api/departments/activate`)
+    return data;
+  }
+
+  activate = async (departmentId: DepartmentId) => {
+    const { data } = await API.post<Department>(`/api/departments/activate`, { departmentId })
+    return data;
+  }
+
+  desactivate = async (departmentId: DepartmentId) => {
+    const { data } = await API.delete<Department>(`/api/departments/activate?id=${departmentId}`)
+    return data;
+  }
 }
 
 export default DepartmentService;

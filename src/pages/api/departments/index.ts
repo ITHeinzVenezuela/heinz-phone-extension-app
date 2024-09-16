@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import status, { OK } from "http-status";
 import createHttpError from "http-errors";
-import DeparmentController from "./_controllers/departments.controller";
-import { errorHandler } from "./_middlewares/errorHandler";
-import { Department, DepartmentIdSchema } from "./_schemas/department.schema";
+import DeparmentController from "../_controllers/departments.controller";
+import { errorHandler } from "../_middlewares/errorHandler";
+import { Department, DepartmentIdSchema } from "../_schemas/department.schema";
 
 const allowedMethods = (method: string) => {
   const HTTP_METHODS = [
@@ -29,22 +29,10 @@ const departmentHandler = async (request: NextApiRequest, response: NextApiRespo
       }
 
       if (METHOD === "POST") {
-        const deparmentIds: Department["id"][] = request.body
-        const deparments = await deparmentController.findBy(deparmentIds)
+        const departmentIds: Department["id"][] = request.body
+        const deparments = await deparmentController.findBy(departmentIds)
         response.status(OK).json(deparments)
       }
-
-      // if(METHOD === "POST"){
-
-      // }
-
-      // if(METHOD === "PUT"){
-
-      // }
-
-      // if(METHOD === "DELETE"){
-
-      // }
 
     } else {
       throw new createHttpError.MethodNotAllowed("Bad Request!")

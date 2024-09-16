@@ -41,12 +41,12 @@ class ExtensionController {
     }
 
     // Eliminando duplicados de IDs
-    const deparmentIds = [...new Set(employees.map(({ departmentId }) => departmentId))]
+    const departmentIds = [...new Set(employees.map(({ departmentId }) => departmentId))]
     
     if (employees.length) {
 
       // Departamentos
-      const departments = await departmentController.findBy(deparmentIds)
+      const departments = await departmentController.findBy(departmentIds)
 
       const data: EmployeeExtension[] = employees.map((employee) => {
         const { ficha, departmentId } = employee

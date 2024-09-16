@@ -57,7 +57,7 @@ const Departamentos = () => {
 
         const departments = await departmentService.getAll()
         setDepartments(departments)
-
+        
         setLoading(false)
 
         await searchExtensions()
@@ -133,6 +133,7 @@ const Departamentos = () => {
                             department,
                             employees: data.length,
                             asignedExtensions,
+                            setDepartments,
                           }} />
                         )
                         :
@@ -140,6 +141,7 @@ const Departamentos = () => {
                           department,
                           employees: data.length,
                           asignedExtensions,
+                          setDepartments,
                         }} />
                     )
                   })

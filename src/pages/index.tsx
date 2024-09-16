@@ -125,7 +125,8 @@ const Home = () => {
                 <select className="Input" name="department" id="" onChange={handleChange}>
                   <option value="all">TODOS</option>
                   {
-                    departments.map(({ id, name }) =>
+                    departments.map(({ id, name, active }) =>
+                      active &&
                       <option value={id}>{name}</option>
                     )
                   }
