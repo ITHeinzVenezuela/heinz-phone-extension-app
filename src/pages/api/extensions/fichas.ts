@@ -5,12 +5,12 @@ import { Extension, ExtensionNumberSchema, ExtensionSchema } from "../_schemas/e
 import createHttpError from "http-errors";
 import ExtensionController from "../_controllers/extension.controller";
 import { Extensions } from "sequelize/types/utils/validator-extras";
-import { Employee } from "../_schemas/employee.schema";
+import { Employee, EmployeeFichaSchema } from "../_schemas/employee.schema";
 
 const allowedMethods = (method: string) => {
   const HTTP_METHODS = [
     "GET",
-    // "POST",
+    "POST",
     // "PUT",
     // "DELETE",
   ]
@@ -28,6 +28,13 @@ const extensionHandler = async (request: NextApiRequest, response: NextApiRespon
         const departmentId = request.query.departmentId
         const extensions = await extension.getAllInfo(departmentId as string)
         response.status(OK).json(extensions)
+      }
+      
+      if (METHOD === "POST") {
+        const ficha = request.body.ficha as Employee["ficha"]
+        const validatedFicha = EmployeeFichaSchema.parse(ficha)
+        const employee = await extension.findEmployee(validatedFicha)
+        response.status(OK).json(employee)
       }
 
     } else {

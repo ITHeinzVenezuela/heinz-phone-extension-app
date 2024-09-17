@@ -8,7 +8,7 @@ import Button from '@/components/widgets/Button'
 import { TbPhoneX } from "react-icons/tb";
 import { TbPhoneCheck } from "react-icons/tb";
 import { FaUserPlus } from "react-icons/fa6";
-
+import { FaSearch } from "react-icons/fa";
 import Spinner from '@/components/widgets/Spinner'
 import { sortDepartments } from '@/utils'
 import { useRouter } from 'next/router'
@@ -22,6 +22,7 @@ import PDFRender from '@/components/widgets/PDFRenderer'
 import NotificationModal from '@/components/widgets/NotificationModal'
 import useNotification from '@/hooks/useNotification'
 import useAuth from '@/hooks/useAuth'
+import Input from '@/components/widgets/Input'
 
 const extensionService = new ExtensionService()
 const departmentService = new DepartmentService()
@@ -29,14 +30,14 @@ const departmentService = new DepartmentService()
 const Home = () => {
 
   const [renderPage, user] = useAuth()
-  
+
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
   const [rendered, setRendered] = useState<boolean>(false)
-  
+
   const [searchedAll, setSearchedAll] = useState<string>("all")
 
   const [status, handleStatus] = useNotification()
-  
+
   const [modifyEmployee, setModifyEmployee] = useState<Employee | undefined>(undefined)
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -85,7 +86,7 @@ const Home = () => {
     event.preventDefault()
     try {
       setLoading(true)
-      
+
       await searchExtensions()
 
       setLoading(false)
@@ -106,35 +107,45 @@ const Home = () => {
 
   const data = noExtensionVisible ? extensions : asignedExtensions
 
+  const CI_MAX_LENGTH = 8
+
   return (
     <>
       <Header />
       <main>
         <section className="p-4">
           <div className="flex justify-between items-center pb-4">
-            <form className="flex gap-4" onSubmit={handleSubmit}>
-              <label htmlFor="" className="Input">
-                <select className="Input" name="department" id="" onChange={handleChange}>
-                  <option value="all">TODOS</option>
-                  {
-                    departments.map(({ id, name, active }) =>
-                      active &&
-                      <option value={id}>{name}</option>
-                    )
-                  }
-                </select>
-              </label>
+            <div className="flex gap-4">
+              <form className="flex" onSubmit={handleSubmit}>
+                <label htmlFor="" className="Input !rounded-r-none !border-r-0">
+                  <select className="Input" name="department" id="" onChange={handleChange}>
+                    <option value="all">TODOS</option>
+                    {
+                      departments.map(({ id, name, active }) =>
+                        active &&
+                        <option value={id}>{name}</option>
+                      )
+                    }
+                  </select>
+                </label>
 
-              {/* <Input
-                id="name"
-                // value={name}
-                className="w-full"
-                // title="Nombre del Chofer"
-                placeholder="ORLANDO MENDOZA"
-              // onChange={handleChange}
-              /> */}
-              <Button type="submit" color="secondary">Buscar</Button>
-              
+                <Button type="submit" color="secondary" className="!px-4 !rounded-l-none">
+                  <FaSearch />
+                </Button>
+
+              </form>
+              <form className="flex">
+                <Input
+                  id="ficha"
+                  className="w-full font-semibold !rounded-r-none !border-r-0"
+                  maxLength={CI_MAX_LENGTH}
+                  placeholder="Ficha"
+                  onChange={handleChange}
+                />
+                <Button type="submit" color="secondary" className="!px-4 !rounded-l-none">
+                  <FaSearch />
+                </Button>
+              </form>
               {
                 searchedAll !== "all" &&
                 <Button
@@ -147,19 +158,18 @@ const Home = () => {
                   }
                 </Button>
               }
-
-            </form>
+            </div>
             <div className="flex gap-2">
               <Button
                 className="flex gap-2 items-center !px-3 font-semibold bg-emerald-500"
-                onClick={() => { 
+                onClick={() => {
                   setRendered(true)
                   setTimeout(() => {
                     setRendered(false)
                   }, 3000)
                 }}
               >
-                Descargar Listado <IoMdCloudDownload size={20}/>
+                Descargar Listado <IoMdCloudDownload size={20} />
               </Button>
               {
                 user &&
@@ -219,7 +229,7 @@ const Home = () => {
             />
           }
           {
-            rendered && 
+            rendered &&
             <PDFRender departments={departments} extensions={data} />
           }
         </section>

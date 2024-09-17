@@ -8,6 +8,9 @@ import { Employee } from "../_schemas/employee.schema";
 import DeparmentController from "./departments.controller";
 import { Department, DepartmentId } from "../_schemas/department.schema";
 
+const employeeController = new EmployeesController()
+const departmentController = new DeparmentController()
+
 class ExtensionController {
   getAll = async (departmentId?: DepartmentId) => {
     // Departamentos
@@ -21,9 +24,6 @@ class ExtensionController {
 
   getAllInfo = async (departmentId: string | undefined) => {
 
-    const employeeController = new EmployeesController()
-    const departmentController = new DeparmentController()
-
     const extensions = await this.getAll(departmentId)
     const fichas = extensions.map(({ ficha }) => ficha)
 
@@ -36,13 +36,13 @@ class ExtensionController {
       employees = await employeeController.findByFichas(fichas)
     } else if (departmentId) {
       employees = await employeeController.findBy("departmentId", departmentId)
-    } else if(departmentId === ""){
+    } else if (departmentId === "") {
       employees = await employeeController.getContractorsBy("departmentId", departmentId)
     }
 
     // Eliminando duplicados de IDs
     const departmentIds = [...new Set(employees.map(({ departmentId }) => departmentId))]
-    
+
     if (employees.length) {
 
       // Departamentos
@@ -68,8 +68,48 @@ class ExtensionController {
     }
   }
 
+  findEmployee = async (ficha: Employee["ficha"]) => {
+
+    const employee = (await employeeController.findByFichas([ficha]))[0]
+
+    if (employee) {
+
+      const department = (await departmentController.findBy([employee.departmentId]))[0]
+
+      const queryString = `
+        SELECT * FROM [HPE_Extensions]
+        WHERE ficha = '${ficha}'
+      `
+      
+//       SELECT 
+//   FICHA as ficha, 
+//   NOMBRE as name, 
+//   CEDULA as cedula, 
+//   CODDEP as departmentId
+// FROM OPENQUERY (JDE, '
+// SELECT * FROM spi.nmpp007 
+// WHERE status = ''1''
+// AND TRIM(NOMBRE) LIKE ''%LUGO%''
+// ')
+// ORDER BY NOMBRE ASC;
+
+      const extension = (await sequelize.query(queryString) as [Extension[], unknown])[0][0]
+
+      const employeeExtension: EmployeeExtension = {
+        number: extension?.number ? [extension.number] : [],
+        employee,
+        department,
+      }
+
+      return employeeExtension
+
+    } else {
+      throw new createHttpError.NotFound("Not Found Employee")
+    }
+  }
+
   findOne = async (number: Extension["number"]) => {
-    // Trabajadores
+    // Extensiones
     const queryString = `
       SELECT * FROM [HPE_Extensions]
       WHERE number = ${number}

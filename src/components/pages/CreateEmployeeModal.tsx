@@ -27,7 +27,7 @@ const CreateEmployeeModal = ({ showModal, setModal, modifyEmployee, searchExtens
     ficha: "",
     name: "",
     cedula: "",
-    departmentId: "",
+    departmentId: "OTROS",
     contractor: true,
   }
 

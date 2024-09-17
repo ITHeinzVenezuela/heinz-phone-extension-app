@@ -19,6 +19,11 @@ class ExtensionService {
     return data;
   }
 
+  findEmployee = async (ficha: Employee["ficha"]) => {
+    const { data } = await API.post<EmployeeExtension>(`/api/extensions/fichas`, { ficha })
+    return data;
+  }
+
   create = async (extension: Extension) => {
     const { data } = await API.post<Extension>(`/api/extensions`, extension)
     return data;
