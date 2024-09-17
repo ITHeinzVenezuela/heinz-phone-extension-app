@@ -3,6 +3,7 @@ import Form from '@/components/widgets/Form'
 import Input from '@/components/widgets/Input'
 import NotificationModal from '@/components/widgets/NotificationModal'
 import Spinner from '@/components/widgets/Spinner'
+import useAuth from '@/hooks/useAuth'
 import useNotification from '@/hooks/useNotification'
 import UserService from '@/services/users'
 import { saveToSStorage } from '@/utils/sessionStorage'
@@ -14,6 +15,7 @@ const userService = new UserService()
 
 const LogIn = () => {
 
+  const [renderPage] = useAuth()
   const router = useRouter()
 
   const [user, setUser] = useState({

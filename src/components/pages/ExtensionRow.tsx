@@ -11,9 +11,9 @@ import useNotification from '@/hooks/useNotification';
 import ConfirmModal from '../widgets/ConfirmModal';
 import ExtensionService from '@/services/extensions';
 import NotificationModal from '../widgets/NotificationModal';
+import useAuth from '@/hooks/useAuth';
 
 type Props = {
-  isAdmin: boolean,
   extension: EmployeeExtension,
   searchExtensions: () => Promise<void>,
   setShowCreateModal: Dispatch<SetStateAction<boolean>>,
@@ -23,10 +23,12 @@ type Props = {
 const employeeService = new EmployeesService()
 const extensionService = new ExtensionService()
 
-const ExtensionRow = ({ extension, isAdmin, searchExtensions, setModifyEmployee, setShowCreateModal }: Props) => {
+const ExtensionRow = ({ extension, searchExtensions, setModifyEmployee, setShowCreateModal }: Props) => {
 
   const { number, employee, department } = extension
   
+  
+  const [renderPage, user] = useAuth()
   const [status, handleStatus] = useNotification()
   
   const [showModifyModal, setModifyModal] = useState<boolean>(false)
@@ -97,7 +99,7 @@ const ExtensionRow = ({ extension, isAdmin, searchExtensions, setModifyEmployee,
       <td>{department.name}</td>
       <td>{extension.number ? extension.number.join(", ") : "-"}</td>
       {
-        isAdmin &&
+        user &&
         <td>
           <div className="flex gap-2">
             <Button color="info" onClick={() => setModifyModal(true)}>

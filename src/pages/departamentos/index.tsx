@@ -16,6 +16,9 @@ import { TbPhoneCheck } from "react-icons/tb";
 import DepartmentRow from '@/components/pages/DepartmentRow'
 import useNotification from '@/hooks/useNotification'
 import NotificationModal from '@/components/widgets/NotificationModal'
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
+import useAuth from '@/hooks/useAuth'
 
 const extensionService = new ExtensionService()
 const employeeService = new EmployeesService()
@@ -23,29 +26,16 @@ const departmentService = new DepartmentService()
 
 const Departamentos = () => {
 
-  const [status, handleStatus] = useNotification()
+  const [renderPage, user] = useAuth()
   
-  const [user, setUser] = useState<UserCredentials>({
-    name: "",
-    email: "",
-  })
-
+  const [status, handleStatus] = useNotification()
   const [extensions, setExtensions] = useState<EmployeeExtension[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
 
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
   const [noExtensionVisible, setNoExtensionVisible] = useState<boolean>(false)
-
-  useEffect(() => {
-    const user = getFromSStorage<UserCredentials>("user")
-    if (user) {
-      setUser(user)
-      setIsAdmin(true)
-    }
-  }, [])
 
   useEffect(() => {
     (async () => {
@@ -85,18 +75,16 @@ const Departamentos = () => {
 
   return (
     <>
-      <Header {...{ user, isAdmin, setIsAdmin }} />
+      <Header />
       <main className="p-4">
         {/* <h1>Departamentos:</h1> */}
-        <div>
+        <div className="flex justify-end">
           <Button
             color={noExtensionVisible ? "gray" : "success"}
-            className="w-[50px] h-[50px] flex justify-center items-center"
+            className="flex justify-center items-center gap-2"
             onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
           >
-            {
-              noExtensionVisible ? <TbPhoneX size={20} /> : <TbPhoneCheck size={20} />
-            }
+            <span>Ver Todos</span> {noExtensionVisible ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
           </Button>
         </div>
         {

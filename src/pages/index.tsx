@@ -21,25 +21,24 @@ import { IoMdCloudDownload } from "react-icons/io";
 import PDFRender from '@/components/widgets/PDFRenderer'
 import NotificationModal from '@/components/widgets/NotificationModal'
 import useNotification from '@/hooks/useNotification'
+import useAuth from '@/hooks/useAuth'
 
 const extensionService = new ExtensionService()
 const departmentService = new DepartmentService()
 
 const Home = () => {
 
+  const [renderPage, user] = useAuth()
+  
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
   const [rendered, setRendered] = useState<boolean>(false)
+  
+  const [searchedAll, setSearchedAll] = useState<string>("all")
 
   const [status, handleStatus] = useNotification()
   
-  const [user, setUser] = useState<UserCredentials>({
-    name: "",
-    email: "",
-  })
-
   const [modifyEmployee, setModifyEmployee] = useState<Employee | undefined>(undefined)
 
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
   const [extensions, setExtensions] = useState<EmployeeExtension[]>([])
@@ -48,14 +47,6 @@ const Home = () => {
   const [noExtensionVisible, setNoExtensionVisible] = useState<boolean>(false)
 
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all")
-
-  useEffect(() => {
-    const user = getFromSStorage<UserCredentials>("user")
-    if (user) {
-      setUser(user)
-      setIsAdmin(true)
-    }
-  }, [])
 
   useEffect(() => {
     (async () => {
@@ -77,6 +68,7 @@ const Home = () => {
 
   const searchExtensions = async () => {
     try {
+      setSearchedAll(selectedDepartment)
       const extensions = await extensionService.getAllInfo(selectedDepartment)
       setExtensions(extensions)
     } catch (error) {
@@ -93,7 +85,7 @@ const Home = () => {
     event.preventDefault()
     try {
       setLoading(true)
-
+      
       await searchExtensions()
 
       setLoading(false)
@@ -116,7 +108,7 @@ const Home = () => {
 
   return (
     <>
-      <Header {...{ user, isAdmin, setIsAdmin }} />
+      <Header />
       <main>
         <section className="p-4">
           <div className="flex justify-between items-center pb-4">
@@ -142,16 +134,19 @@ const Home = () => {
               // onChange={handleChange}
               /> */}
               <Button type="submit" color="secondary">Buscar</Button>
-
-              <Button
-                color={noExtensionVisible ? "gray" : "success"}
-                className="w-[50px] h-[50px] flex justify-center items-center"
-                onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
-              >
-                {
-                  noExtensionVisible ? <TbPhoneX size={20} /> : <TbPhoneCheck size={20} />
-                }
-              </Button>
+              
+              {
+                searchedAll !== "all" &&
+                <Button
+                  color={noExtensionVisible ? "gray" : "success"}
+                  className="w-[50px] h-[50px] flex justify-center items-center"
+                  onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
+                >
+                  {
+                    noExtensionVisible ? <TbPhoneX size={20} /> : <TbPhoneCheck size={20} />
+                  }
+                </Button>
+              }
 
             </form>
             <div className="flex gap-2">
@@ -167,7 +162,7 @@ const Home = () => {
                 Descargar Listado <IoMdCloudDownload size={20}/>
               </Button>
               {
-                isAdmin &&
+                user &&
                 <Button
                   className="flex gap-2 items-center !px-3 font-semibold bg-sky-500"
                   onClick={() => {
@@ -190,7 +185,7 @@ const Home = () => {
                     <th>Departamento</th>
                     <th>Extensión</th>
                     {
-                      isAdmin &&
+                      user &&
                       <th>Acciones</th>
                     }
                   </tr>
@@ -200,7 +195,6 @@ const Home = () => {
                     data.map((extension) =>
                       <ExtensionRow {...{
                         extension,
-                        isAdmin,
                         searchExtensions,
                         setShowCreateModal,
                         setModifyEmployee
