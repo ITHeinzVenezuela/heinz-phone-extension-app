@@ -26,7 +26,7 @@ const departmentService = new DepartmentService()
 
 const Departamentos = () => {
 
-  const [renderPage, user] = useAuth()
+  const [renderPage, user, setUser] = useAuth()
   
   const [status, handleStatus] = useNotification()
   const [extensions, setExtensions] = useState<EmployeeExtension[]>([])
@@ -75,7 +75,7 @@ const Departamentos = () => {
 
   return (
     <>
-      <Header />
+      <Header {...{ user, setUser }}/>
       <main className="p-4">
         {/* <h1>Departamentos:</h1> */}
         <div className="flex justify-end">

@@ -68,40 +68,39 @@ class ExtensionController {
     }
   }
 
-  findEmployee = async (ficha: Employee["ficha"]) => {
+  findEmployee = async (name: Employee["name"]) => {
 
-    const employee = (await employeeController.findByFichas([ficha]))[0]
+    const employees = await employeeController.findBy("name", name)
 
-    if (employee) {
+    if (employees.length) {
 
-      const department = (await departmentController.findBy([employee.departmentId]))[0]
-
-      const queryString = `
+      const queryString2 = `
         SELECT * FROM [HPE_Extensions]
-        WHERE ficha = '${ficha}'
+        WHERE ficha IN (${employees.map(({ ficha }) => `'${ficha}'`)})
       `
+
+      // Eliminando duplicados de IDs
+      const departmentIds = [...new Set(employees.map(({ departmentId }) => departmentId))]
+
+      // Departamentos
+      const departments = await departmentController.findBy(departmentIds)
+
+      const [extensions] = await sequelize.query(queryString2) as [Extension[], unknown]
+
+      const data: EmployeeExtension[] = employees.map((employee) => {
+        const { ficha, departmentId } = employee
+
+        const extension = extensions.filter((employee) => employee.ficha === ficha)
+        const department = departments.find((department) => department.id === employee.departmentId) as Department
+
+        return {
+          number: extension.map(({ number }) => number),
+          employee,
+          department,
+        }
+      })
       
-//       SELECT 
-//   FICHA as ficha, 
-//   NOMBRE as name, 
-//   CEDULA as cedula, 
-//   CODDEP as departmentId
-// FROM OPENQUERY (JDE, '
-// SELECT * FROM spi.nmpp007 
-// WHERE status = ''1''
-// AND TRIM(NOMBRE) LIKE ''%LUGO%''
-// ')
-// ORDER BY NOMBRE ASC;
-
-      const extension = (await sequelize.query(queryString) as [Extension[], unknown])[0][0]
-
-      const employeeExtension: EmployeeExtension = {
-        number: extension?.number ? [extension.number] : [],
-        employee,
-        department,
-      }
-
-      return employeeExtension
+      return data
 
     } else {
       throw new createHttpError.NotFound("Not Found Employee")

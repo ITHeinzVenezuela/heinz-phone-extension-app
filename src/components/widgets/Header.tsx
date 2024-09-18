@@ -1,14 +1,18 @@
-import React, { useEffect, useRef } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Button from './Button'
 import { FiLogIn } from 'react-icons/fi'
 import { FaArrowUp } from "react-icons/fa";
 import useAuth from '@/hooks/useAuth'
+import { UserCredentials } from '@/pages/api/_schemas/user.schema'
 
-const Header = ({ }) => {
+type Props = {
+  user: UserCredentials | null
+  setUser: Dispatch<SetStateAction<UserCredentials | null>>
+}
 
-  const [renderPage, user, setUser] = useAuth()
+const Header = ({ user, setUser }: Props) => {
 
   const router = useRouter()
   const $backToTopBtn = useRef<HTMLButtonElement>(null)

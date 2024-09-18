@@ -52,6 +52,13 @@ const LogIn = () => {
         setTimeout(() => {
           router.push("/")
         }, 2000);
+        
+      }else{
+        handleStatus.open(({
+          type: "danger",
+          title: "Inicio de Sesión inválido❗",
+          message: `Contraseña incorrecta`
+        }))
       }
       
       setLoading(false)

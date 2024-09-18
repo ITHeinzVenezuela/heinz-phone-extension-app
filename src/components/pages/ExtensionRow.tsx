@@ -12,8 +12,10 @@ import ConfirmModal from '../widgets/ConfirmModal';
 import ExtensionService from '@/services/extensions';
 import NotificationModal from '../widgets/NotificationModal';
 import useAuth from '@/hooks/useAuth';
+import { UserCredentials } from '@/pages/api/_schemas/user.schema';
 
 type Props = {
+  user: UserCredentials | null,
   extension: EmployeeExtension,
   searchExtensions: () => Promise<void>,
   setShowCreateModal: Dispatch<SetStateAction<boolean>>,
@@ -23,12 +25,10 @@ type Props = {
 const employeeService = new EmployeesService()
 const extensionService = new ExtensionService()
 
-const ExtensionRow = ({ extension, searchExtensions, setModifyEmployee, setShowCreateModal }: Props) => {
+const ExtensionRow = ({ user, extension, searchExtensions, setModifyEmployee, setShowCreateModal }: Props) => {
 
   const { number, employee, department } = extension
-  
-  
-  const [renderPage, user] = useAuth()
+
   const [status, handleStatus] = useNotification()
   
   const [showModifyModal, setModifyModal] = useState<boolean>(false)

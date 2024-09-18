@@ -58,14 +58,21 @@ class EmployeesController {
   
   findBy = async (field: FindEmployeeBy, value: string | Employee["departmentId"]) => {
 
-    const tableField = field === "departmentId" ? "CODDEP" : field
+    const table = {
+      departmentId: "CODDEP",
+      name: "NOMBRE",
+      ficha: "ficha",
+      cedula: "cedula",
+    }
+    
+    const tableField = table[field]
 
     // Trabajadores Heinz
     const queryString1 = `
       SELECT ${fields} FROM OPENQUERY (JDE, '
         SELECT * FROM spi.nmpp007 
         WHERE status = ''1''
-        AND TRIM(${tableField}) LIKE ''${value}''
+        AND TRIM(${tableField}) LIKE ''${field === "name" ? `%${value}%` : `${value}`}''
       ')
     `
     

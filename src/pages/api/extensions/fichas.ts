@@ -5,7 +5,7 @@ import { Extension, ExtensionNumberSchema, ExtensionSchema } from "../_schemas/e
 import createHttpError from "http-errors";
 import ExtensionController from "../_controllers/extension.controller";
 import { Extensions } from "sequelize/types/utils/validator-extras";
-import { Employee, EmployeeFichaSchema } from "../_schemas/employee.schema";
+import { Employee, EmployeeFichaSchema, EmployeeSchema } from "../_schemas/employee.schema";
 
 const allowedMethods = (method: string) => {
   const HTTP_METHODS = [
@@ -31,9 +31,9 @@ const extensionHandler = async (request: NextApiRequest, response: NextApiRespon
       }
       
       if (METHOD === "POST") {
-        const ficha = request.body.ficha as Employee["ficha"]
-        const validatedFicha = EmployeeFichaSchema.parse(ficha)
-        const employee = await extension.findEmployee(validatedFicha)
+        const name = request.body.name as Employee["name"]
+        const validatedName = EmployeeSchema.shape.name.parse(name)
+        const employee = await extension.findEmployee(validatedName)
         response.status(OK).json(employee)
       }
 

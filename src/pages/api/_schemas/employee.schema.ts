@@ -11,7 +11,7 @@ export const EmployeeSchema = z.object({
 })
 
 export const EmployeeFichaSchema = EmployeeSchema.shape.ficha
-export const FindEmployeeBySchema = EmployeeSchema.omit({ name: true }).keyof()
+export const FindEmployeeBySchema = EmployeeSchema.omit({ contractor: true }).keyof()
 
 export type Employee = z.infer<typeof EmployeeSchema>
 export type EmployeeFicha = z.infer<typeof EmployeeFichaSchema>
