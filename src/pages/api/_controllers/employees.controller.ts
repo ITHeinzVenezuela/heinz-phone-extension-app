@@ -50,7 +50,7 @@ class EmployeesController {
     // Trabajadores Contratas
     const queryString2 = `
       SELECT * FROM [HCRM01].[dbo].[HPE_Employees]
-      WHERE ${field} = '${value}'
+      WHERE ${field} LIKE '${field === "name" ? `%${value}%` : `${value}`}'
     `
     const [contractorEmployees] = await sequelize.query(queryString2) as [Employee[], unknown]
     return contractorEmployees;

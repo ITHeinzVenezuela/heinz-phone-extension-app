@@ -103,10 +103,10 @@ const Home = () => {
 
       const form = new FormData(event.currentTarget)
       const name = form.get("name") as string
-      
+
       const extensions = await extensionService.findEmployee(name.toUpperCase())
       setExtensions(extensions)
-      
+
       setSearchedAll("")
       setNoExtensionVisible(true)
       setLoading(false)
@@ -137,7 +137,7 @@ const Home = () => {
 
   return (
     <>
-      <Header {...{ user, setUser }}/>
+      <Header {...{ user, setUser }} />
       <main>
         <section className="p-4">
           <div className="flex justify-between items-center pb-4">
@@ -147,9 +147,9 @@ const Home = () => {
                   <select className="Input" name="department" id="" onChange={handleChange}>
                     <option value="all">TODOS</option>
                     {
-                      departments.map(({ id, name, active }) =>
+                      departments.map(({ id, name, active }, index) =>
                         active &&
-                        <option value={id}>{name}</option>
+                        <option key={index} value={id}>{name}</option>
                       )
                     }
                   </select>
@@ -164,7 +164,6 @@ const Home = () => {
                 <Input
                   id="name"
                   className="w-full font-semibold !rounded-r-none !border-r-0"
-                  maxLength={CI_MAX_LENGTH}
                   placeholder="Buscar por nombre"
                   onChange={handleChange}
                 />
@@ -176,7 +175,7 @@ const Home = () => {
                 searchedAll !== "all" &&
                 <Button
                   color={noExtensionVisible ? "gray" : "success"}
-                  title={`Visualizando empleados ${noExtensionVisible ? "sin" : "con"} extensiones asignadas`}
+                  title={`Visualizando empleados ${noExtensionVisible ? "incluyendo los que no tienen" : "con"} extensiones asignadas`}
                   className="w-[50px] h-[50px] flex justify-center items-center"
                   onClick={() => { setNoExtensionVisible(!noExtensionVisible) }}
                 >
@@ -214,33 +213,41 @@ const Home = () => {
           </div>
           {
             !loading ?
-              <table>
-                <thead>
-                  <tr>
-                    <th>Ficha</th>
-                    <th>Nombre</th>
-                    <th>Departamento</th>
-                    <th>Extensión</th>
-                    {
-                      user &&
-                      <th>Acciones</th>
-                    }
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    data.map((extension) =>
-                      <ExtensionRow {...{
-                        user,
-                        extension,
-                        searchExtensions,
-                        setShowCreateModal,
-                        setModifyEmployee
-                      }} />
-                    )
-                  }
-                </tbody>
-              </table>
+              (
+                data.length ?
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Ficha</th>
+                        <th>Nombre</th>
+                        <th>Departamento</th>
+                        <th>Extensión</th>
+                        {
+                          user &&
+                          <th>Acciones</th>
+                        }
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        data.map((extension, index) =>
+                          <ExtensionRow key={index} {...{
+                            user,
+                            extension,
+                            searchExtensions,
+                            setShowCreateModal,
+                            setModifyEmployee
+                          }} />
+                        )
+                      }
+                    </tbody>
+                  </table>
+                  :
+                  <div className="py-28 flex justify-content items-center flex-col gap-4">
+                    <img width={150} src="/images/muñequito-comiendo-papitas.gif" />
+                    <span className="font-bold text-base text-gray-500">No se ha encontrado ningún empleado que coincida con la búsqueda</span>
+                  </div>
+              )
               :
               <div className="py-40 flex justify-center items-center gap-4">
                 <Spinner size="normal" /> <span className="text-lg font-semibold">Cargando...</span>

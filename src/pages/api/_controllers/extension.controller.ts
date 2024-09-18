@@ -88,7 +88,7 @@ class ExtensionController {
       const [extensions] = await sequelize.query(queryString2) as [Extension[], unknown]
 
       const data: EmployeeExtension[] = employees.map((employee) => {
-        const { ficha, departmentId } = employee
+        const { ficha } = employee
 
         const extension = extensions.filter((employee) => employee.ficha === ficha)
         const department = departments.find((department) => department.id === employee.departmentId) as Department
@@ -103,7 +103,7 @@ class ExtensionController {
       return data
 
     } else {
-      throw new createHttpError.NotFound("Not Found Employee")
+      return employees;
     }
   }
 

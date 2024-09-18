@@ -202,7 +202,7 @@ const PDF = ({ extensions }: PDFProps) => {
 
   return (
     <Document>
-      <Page>
+      <Page orientation="landscape">
 
         <View style={styles.page}>
           <View style={header.styles}>
@@ -223,12 +223,12 @@ const PDF = ({ extensions }: PDFProps) => {
 
           <View style={container.styles}>
             {
-              departments.map(({ name, extensions }) =>
-                <View style={department.styles}>
+              departments.map(({ id, name, extensions }, index) =>
+                <View key={index} style={department.styles}>
                   <Text style={department.title}>{name}</Text>
                   {
-                    formatExtensions(extensions).map(({ number, employee }) =>
-                      <View style={person.styles}>
+                    formatExtensions(extensions).map(({ number, employee }, index) =>
+                      <View key={index} style={person.styles}>
                         <Text style={styles.text}>{employee.name}</Text>
                         <Text style={styles.text}>{number?.join(", ")}</Text>
                       </View>

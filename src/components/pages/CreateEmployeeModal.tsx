@@ -126,9 +126,9 @@ const CreateEmployeeModal = ({ showModal, setModal, modifyEmployee, searchExtens
           >
             {/* <option value="">Otros</option> */}
             {
-              departments.map(({ id, name }) => {
+              departments.map(({ id, name }, index) => {
                 return (
-                  <option value={id} selected={id === departmentId}>{name}</option>
+                  <option key={index} value={id} selected={id === departmentId}>{name}</option>
                 )
               })
             }

@@ -23,7 +23,7 @@ class DeparmentController {
       SELECT ${fields} FROM [MEDICO_Departamento]
     `
     const [data] = await sequelize.query(queryString) as [Department[], unknown]
-
+    
     const depsData = await this.verifyActiveDepartments()
 
     let departments = sortDepartments(data)
@@ -36,7 +36,7 @@ class DeparmentController {
     })
 
     departments.unshift(OTHERS_DEPARTMENT)
-
+    console.log('departments', departments)
     return departments;
   }
 

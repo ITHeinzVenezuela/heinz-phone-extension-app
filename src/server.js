@@ -4,12 +4,13 @@ const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
  
-const dev = process.env.NODE_ENV
+const NODE_ENV = process.env.NODE_ENV || ""
+const dev = process.env.NODE_ENV !== 'production'
 
 const hostname = process.env.HOSTNAME
 const port = process.env.PORT || 7000
 
-console.log("NODE_ENV ->", dev);
+console.log("NODE_ENV ->", NODE_ENV);
 console.log("PORT ->", port);
 
 // when using middleware `hostname` and `port` must be provided below
